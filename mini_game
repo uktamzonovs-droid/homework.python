@@ -1,0 +1,153 @@
+import pygame
+
+pygame.init()
+
+# Размер окна
+WIDTH = 1200
+HEIGHT = 800
+
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Моя игра")
+
+clock = pygame.time.Clock()
+
+# =========================
+# Загрузка изображений
+# =========================
+
+background = pygame.image.load("ChatGPT Image 19 авг. 2026 г., 20_24_46.png")
+background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+
+player_image = pygame.image.load("knight.png")
+player_image = pygame.transform.scale(player_image, (80, 80))
+
+npc_image = pygame.image.load("ChatGPT Image 19 авг. 2026 г., 20_33_43.png")
+npc_image = pygame.transform.scale(npc_image, (80, 80))
+
+# =========================
+# Игрок
+# =========================
+
+player_x = 200
+player_y = 350
+
+player_speed = 5
+
+# =========================
+# NPC
+# =========================
+
+npc_x = 500
+npc_y = 200
+
+npc_speed = 3
+
+# Направление NPC:
+# 0 - вправо
+# 1 - вниз
+# 2 - влево
+# 3 - вверх
+
+npc_direction = 0
+
+# Границы прямоугольника NPC
+left = 500
+right = 900
+top = 200
+bottom = 600
+
+# =========================
+# Главный цикл
+# =========================
+
+running = True
+
+while running:
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    # =========================
+    # Движение игрока
+    # =========================
+
+    keys = pygame.key.get_pressed()
+
+    # Вверх
+    if keys[pygame.K_UP] or keys[pygame.K_w]:
+        player_y -= player_speed
+
+    # Вниз
+    if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+        player_y += player_speed
+
+    if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+        player_x-= player_speed
+
+    # Вниз
+    if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+        player_x += player_speed
+
+    # Не даём игроку выйти за экран
+    if player_y < 0:
+        player_y = 0
+
+    if player_y + player_image.get_height() > HEIGHT:
+        player_y = HEIGHT - player_image.get_height()  
+
+    if player_x < 0:
+        player_x = 0
+
+    if player_x + player_image.get_height() > HEIGHT:
+        player_x = HEIGHT - player_image.get_height()
+
+    # =========================
+    # Движение NPC
+    # =========================
+
+    if npc_direction == 0:
+        npc_x += npc_speed
+
+        if npc_x + npc_image.get_width() >= right:
+            npc_x = right - npc_image.get_width()
+            npc_direction = 1
+
+    elif npc_direction == 1:
+        npc_y += npc_speed
+
+        if npc_y + npc_image.get_height() >= bottom:
+            npc_y = bottom - npc_image.get_height()
+            npc_direction = 2
+
+    elif npc_direction == 2:
+        npc_x -= npc_speed
+
+        if npc_x <= left:
+            npc_x = left
+            npc_direction = 3
+
+    elif npc_direction == 3:
+        npc_y -= npc_speed
+
+        if npc_y <= top:
+            npc_y = top
+            npc_direction = 0
+
+    # =========================
+    # Отрисовка
+    # =========================
+
+    screen.blit(background, (0, 0))
+
+    # Игрок
+    screen.blit(player_image, (player_x, player_y))
+
+    # NPC
+    screen.blit(npc_image, (npc_x, npc_y))
+
+    pygame.display.update()
+
+    clock.tick(60)
+
+pygame.quit()
